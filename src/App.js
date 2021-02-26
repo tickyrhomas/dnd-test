@@ -1,7 +1,7 @@
 
 import React, {useState, useEffect} from 'react'
-import {useDrag, useDrop, DndProvider} from 'react-dnd'
-import {HTML5Backend} from 'react-dnd-html5-backend'
+import {useDrag, useDrop} from 'react-dnd'
+
 import {Paper, Typography} from '@material-ui/core'
 
 const items = [{
@@ -16,12 +16,10 @@ const items = [{
   }]
 
 function DropBox(props) {
-  const {addItem, containedItems} = props
+  const {containedItems} = props
   const [{canDrop, isOver}, drop] = useDrop(()=>({
     accept: 'type1',
-    drop: (item, monitor) => {
-      addItem(item.id)
-    },
+    drop: () => ({ name: 'DropBox' }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop()
@@ -30,18 +28,29 @@ function DropBox(props) {
 
   return (
     <Paper ref={drop} style={{backgroundColor: isOver?'green':'white', display:'flex', alignItems: 'center', justifyContent: 'center', height: '12rem', width: '12rem'}}>
-      {canDrop? <Typography>Drop Here</Typography>: <Typography>NOPE</Typography>}
-      {containedItems.map((item)=>{
-        return (<Typography key={item.name}>{item.name}</Typography>)
-      })}
+      {/* {canDrop? <Typography>Drop Here</Typography>: <Typography>NOPE</Typography>} */}
+      <div style={{display:'flex', flexDirection:'column'}}>
+        {containedItems.map((item)=>{
+          return (<Typography key={item.name}>{item.name}</Typography>)
+        })}
+      </div>
+      
     </Paper>
   )
 }
 
 function Item(props) {
-  const {item:someObj} = props
+  const {item:someObj, addItem} = props
   const [{isDragging}, drag, dragPreview] = useDrag(()=>({
     item:{type: 'type1', id: someObj.id},
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult()
+      console.log('added',item.id,' into ', JSON.stringify(dropResult))
+      if(dropResult?.name === 'DropBox') {
+        debugger
+        addItem(item.id)
+      }
+    },
     collect: (monitor) =>({
       isDragging: monitor.isDragging()
     })
@@ -67,27 +76,28 @@ function App() {
   
   function addItem(itemId) {
     console.log('1', containedItems)
+    debugger
     const itemToAdd = items.find((ele)=>ele.id===itemId)
     const newContainedItems = [...containedItems, itemToAdd]
     console.log('2',newContainedItems)
     setContainedItems(newContainedItems)
   }
-
+  console.log('render', containedItems)
   return (
-    <DndProvider backend={HTML5Backend}>
+    
       <div style={{margin: '2rem', width: '100%', height: '100%'}}>
         <div style={{marginBottom: '5rem'}}>
           <Typography>Drop In These Boxes</Typography>
-            <DropBox containedItems={containedItems} addItem={addItem}/>
+            <DropBox containedItems={containedItems}/>
         </div>
           <Typography>Items to drop</Typography>
           {items && (items.map((item, index)=>{
             return (
-              <Item key={`item-${index}`} item={item}/>
+              <Item key={`item-${index}`} item={item} addItem={addItem}/>
             )
           }))}
       </div>
-    </DndProvider>
+    
   );
 }
 
