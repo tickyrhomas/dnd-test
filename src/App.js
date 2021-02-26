@@ -78,7 +78,7 @@ function App() {
   function addItem(itemId) {
     console.log('1', itemsRef.current)
     const itemToAdd = items.find((ele)=>ele.id===itemId)
-    const newContainedItems = [...containedItems, itemToAdd]
+    const newContainedItems = [...itemsRef.current, itemToAdd]
     console.log('2',newContainedItems)
     setContainedItems(newContainedItems)
   }
