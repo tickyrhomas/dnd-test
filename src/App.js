@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useDrag, useDrop, DndProvider} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
 import {Paper, Typography} from '@material-ui/core'
@@ -55,10 +55,21 @@ function Item(props) {
 
 function App() {
   const [containedItems, setContainedItems] = useState([])
+  useEffect(() => {
+    console.log("mounted");
+    return () => console.log("unmounted")
+  },[]);
 
+  useEffect(() => {
+    console.log('changed')
+    console.log(containedItems)
+  },[containedItems])
+  
   function addItem(itemId) {
+    console.log('1', containedItems)
     const itemToAdd = items.find((ele)=>ele.id===itemId)
     const newContainedItems = [...containedItems, itemToAdd]
+    console.log('2',newContainedItems)
     setContainedItems(newContainedItems)
   }
 
