@@ -1,5 +1,5 @@
 
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useDrag, useDrop} from 'react-dnd'
 
 import {Paper, Typography} from '@material-ui/core'
@@ -47,7 +47,6 @@ function Item(props) {
       const dropResult = monitor.getDropResult()
       console.log('added',item.id,' into ', JSON.stringify(dropResult))
       if(dropResult?.name === 'DropBox') {
-        debugger
         addItem(item.id)
       }
     },
@@ -64,6 +63,8 @@ function Item(props) {
 
 function App() {
   const [containedItems, setContainedItems] = useState([])
+  const itemsRef= useRef({});
+  itemsRef.current = containedItems;
   useEffect(() => {
     console.log("mounted");
     return () => console.log("unmounted")
@@ -75,8 +76,7 @@ function App() {
   },[containedItems])
   
   function addItem(itemId) {
-    console.log('1', containedItems)
-    debugger
+    console.log('1', itemsRef.current)
     const itemToAdd = items.find((ele)=>ele.id===itemId)
     const newContainedItems = [...containedItems, itemToAdd]
     console.log('2',newContainedItems)
