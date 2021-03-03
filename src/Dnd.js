@@ -76,12 +76,12 @@ function App() {
   },[containedItems])
   
   function addItem(itemId) {
-    console.log('1', itemsRef.current)
-    const itemToAdd = items.find((ele)=>ele.id===itemId)
-    const newContainedItems = [...itemsRef.current, itemToAdd]
-    console.log('2',newContainedItems)
-    setContainedItems(newContainedItems)
+    setContainedItems((prev) => {
+      const itemToAdd = items.find((ele) => ele.id === itemId)
+      return [...prev, itemToAdd];
+    });
   }
+  
   console.log('render', containedItems)
   return (
     
